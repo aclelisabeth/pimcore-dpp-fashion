@@ -121,8 +121,7 @@ Sobald die Tools installiert sind:
    ```
 
 6. **Login:**
-   - Username: `admin`
-   - Password: `admin123`
+    - Verwende die Zugangsdaten aus der `.env` Datei (Lokal auf dem Computer, nicht in GitHub)
 
 Fertig! Dann kannst du direkt mit dem Projekt arbeiten.
 

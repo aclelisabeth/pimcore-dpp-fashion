@@ -51,8 +51,7 @@ chmod +x install.sh
 
 **Schritt 6: Test im Browser**
 - URL: http://localhost:8080/admin
-- User: admin
-- Password: admin123
+- Verwende die Zugangsdaten aus der `.env` Datei (siehe unten)
 
 ---
 
@@ -187,8 +186,8 @@ C:\Users\elisabeth.schallerl\Downloads\testfolderEli\pimcore-dpp-fashion\
 - Das Projekt läuft **nur lokal** auf deinem Computer
 - Keine Daten werden nach außen gesendet
 - Alles ist in Docker **isoliert**
-- Username/Password (admin/admin123) nur für lokale Nutzung
-- Für Produktion: Sicheres Setup nötig!
+- Zugangsdaten sind in der `.env` Datei (nicht in der Versionskontrolle!)
+- Für Produktion: Sicheres Setup mit starken Passwörtern nötig!
 
 ---
 

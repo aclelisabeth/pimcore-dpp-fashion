@@ -3,6 +3,7 @@
 /public/var/
 /public/bundles/
 /public/uploads/
+.env
 .env.local
 .env.*.local
 symfony.lock
