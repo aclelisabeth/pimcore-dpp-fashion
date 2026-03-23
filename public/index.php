@@ -9,7 +9,7 @@ ini_set('display_errors', 1);
 
 // Enable CORS
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json; charset=utf-8');
 
@@ -18,7 +18,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Load demo products
+// Product storage file
+$PRODUCTS_FILE = __DIR__ . '/../data/products.json';
+$DATA_DIR = __DIR__ . '/../data';
+
+// Ensure data directory exists
+if (!is_dir($DATA_DIR)) {
+    mkdir($DATA_DIR, 0755, true);
+}
+
+// Initialize products file if it doesn't exist
+if (!file_exists($PRODUCTS_FILE)) {
+    initializeProductsFile();
+}
+
+// Load demo products class
 require_once __DIR__ . '/../src/DppProducts.php';
 
 // Simple router
@@ -32,18 +46,20 @@ $request_uri = '/' . ltrim($request_uri, '/');
 
 // Route handling
 if (preg_match('/^\/api\/dpp\/(\d+)\/export$/', $request_uri, $matches)) {
-    // GET /api/dpp/{productId}/export
     $product_id = (int)$matches[1];
     
     if ($request_method === 'GET') {
         handleSingleExport($product_id);
     }
-} elseif ($request_uri === '/api/dpp/batch/export' && $request_method === 'POST') {
-    // POST /api/dpp/batch/export
-    handleBatchExport();
+} elseif ($request_uri === '/api/dpp/products' && $request_method === 'POST') {
+    // POST /api/dpp/products - Create new product
+    handleCreateProduct();
 } elseif ($request_uri === '/api/dpp/products' && $request_method === 'GET') {
     // GET /api/dpp/products - list all products
     handleProductsList();
+} elseif ($request_uri === '/api/dpp/batch/export' && $request_method === 'POST') {
+    // POST /api/dpp/batch/export - batch export
+    handleBatchExport();
 } elseif ($request_uri === '/' || $request_uri === '') {
     // GET / - API info
     handleApiInfo();
@@ -58,21 +74,27 @@ function handleApiInfo() {
         'version' => '1.0.0',
         'description' => 'Digital Product Passport REST API for Fashion/Textiles',
         'endpoints' => [
+            'GET /' => 'API info',
             'GET /api/dpp/products' => 'List all products',
+            'POST /api/dpp/products' => 'Create new product',
             'GET /api/dpp/{productId}/export' => 'Export single product DPP data',
-            'POST /api/dpp/batch/export' => 'Batch export multiple products (body: {"productIds": [1, 2, 3]})',
+            'POST /api/dpp/batch/export' => 'Batch export multiple products',
         ],
         'demo_products' => [1, 2, 3]
     ]);
 }
 
 function handleProductsList() {
-    $products = getProducts();
+    global $PRODUCTS_FILE;
+    
+    $products = loadProducts();
+    
     $list = array_map(function($p) {
         return [
             'id' => $p['id'],
             'name' => $p['name'],
-            'category' => $p['category']
+            'category' => $p['category'],
+            'sku' => $p['sku'] ?? null
         ];
     }, $products);
     
@@ -83,8 +105,71 @@ function handleProductsList() {
     ]);
 }
 
+function handleCreateProduct() {
+    global $PRODUCTS_FILE;
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    // Validate required fields
+    $required = ['name', 'category', 'sku', 'dpp_data'];
+    foreach ($required as $field) {
+        if (!isset($input[$field])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Missing required field: $field"]);
+            return;
+        }
+    }
+    
+    $products = loadProducts();
+    
+    // Generate new ID (max ID + 1)
+    $max_id = 0;
+    foreach ($products as $p) {
+        if ($p['id'] > $max_id) {
+            $max_id = $p['id'];
+        }
+    }
+    
+    $new_product = [
+        'id' => $max_id + 1,
+        'name' => $input['name'],
+        'category' => $input['category'],
+        'sku' => $input['sku'],
+        'description' => $input['description'] ?? '',
+        'manufacturer' => $input['manufacturer'] ?? '',
+        'origin_country' => $input['origin_country'] ?? '',
+        'production_date' => $input['production_date'] ?? date('Y-m-d'),
+        'dpp_data' => $input['dpp_data'],
+        'created_at' => date('c'),
+        'updated_at' => date('c')
+    ];
+    
+    // Add optional fields
+    foreach (['size', 'color', 'price', 'currency'] as $field) {
+        if (isset($input[$field])) {
+            $new_product[$field] = $input[$field];
+        }
+    }
+    
+    // Add to products array
+    $products[] = $new_product;
+    
+    // Save products
+    if (file_put_contents($PRODUCTS_FILE, json_encode($products, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))) {
+        http_response_code(201);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Product created successfully',
+            'data' => $new_product
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to save product']);
+    }
+}
+
 function handleSingleExport($product_id) {
-    $products = getProducts();
+    $products = loadProducts();
     
     $product = null;
     foreach ($products as $p) {
@@ -117,7 +202,7 @@ function handleBatchExport() {
         return;
     }
     
-    $products = getProducts();
+    $products = loadProducts();
     $exported = [];
     
     foreach ($input['productIds'] as $id) {
@@ -138,7 +223,31 @@ function handleBatchExport() {
     ]);
 }
 
-function getProducts() {
+function loadProducts() {
+    global $PRODUCTS_FILE;
+    
+    if (!file_exists($PRODUCTS_FILE)) {
+        return getDefaultProducts();
+    }
+    
+    $content = file_get_contents($PRODUCTS_FILE);
+    $products = json_decode($content, true);
+    
+    if (!is_array($products)) {
+        return getDefaultProducts();
+    }
+    
+    return $products;
+}
+
+function initializeProductsFile() {
+    global $PRODUCTS_FILE;
+    
+    $default_products = getDefaultProducts();
+    file_put_contents($PRODUCTS_FILE, json_encode($default_products, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+}
+
+function getDefaultProducts() {
     return [
         [
             'id' => 1,

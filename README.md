@@ -4,9 +4,10 @@ A lightweight REST API implementation of EU Digital Product Passport (DPP) 2023 
 
 ## What You Get
 
-✅ **Working REST API** - 3 endpoints for product export  
+✅ **Working REST API** - 5 endpoints (GET/POST)  
 ✅ **Docker Container** - PHP 8.1 Apache ready to deploy  
 ✅ **Demo Products** - 3 realistic fashion items with full DPP data  
+✅ **Create Products** - Add new products via POST API  
 ✅ **EU DPP 2023 Compliant** - Sustainability, materials, durability, end-of-life  
 ✅ **Production Ready** - Clean code, no external dependencies  
 
@@ -33,33 +34,28 @@ curl http://localhost:8080/index.php?path=/api/dpp/products
 GET http://localhost:8080/index.php?path=/api/dpp/products
 ```
 
-Response:
-```json
+### 2. Create new product (POST)
+```bash
+POST http://localhost:8080/index.php?path=/api/dpp/products
+Content-Type: application/json
+
 {
-  "status": "success",
-  "count": 3,
-  "products": [
-    {"id": 1, "name": "Organic Cotton T-Shirt", "category": "Apparel"},
-    {"id": 2, "name": "Recycled Denim Jeans", "category": "Apparel"},
-    {"id": 3, "name": "Merino Wool Jacket", "category": "Apparel"}
-  ]
+  "name": "New Product Name",
+  "category": "Apparel",
+  "sku": "UNIQUE-SKU",
+  "price": 99.99,
+  "dpp_data": { ... }
 }
 ```
 
-### 2. Export single product DPP
+See `docs/POST.md` for full POST documentation and examples.
+
+### 3. Export single product DPP
 ```bash
 GET http://localhost:8080/index.php?path=/api/dpp/1/export
 ```
 
-Returns full product details including:
-- Basic info (SKU, size, color, manufacturer, origin)
-- DPP Data:
-  - Materials & composition
-  - Sustainability metrics (carbon footprint, water usage)
-  - Durability (expected lifespan, care instructions)
-  - End-of-life (recyclability, take-back schemes)
-
-### 3. Batch export
+### 4. Batch export
 ```bash
 curl -X POST http://localhost:8080/index.php?path=/api/dpp/batch/export \
   -H "Content-Type: application/json" \
@@ -67,6 +63,8 @@ curl -X POST http://localhost:8080/index.php?path=/api/dpp/batch/export \
 ```
 
 ## Demo Products
+
+The API comes with **3 demo products**. You can add more using the POST endpoint!
 
 ### 1. Organic Cotton T-Shirt (ID: 1)
 - Price: €49.99
