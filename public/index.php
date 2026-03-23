@@ -188,21 +188,34 @@ function handleUpdateProduct($product_id) {
     
     $products = loadProducts();
     $product_found = false;
+    $updated_product = null;
     
     // Find and update product
     foreach ($products as &$p) {
         if ($p['id'] === $product_id) {
             $product_found = true;
             
-            // Update provided fields
+            // Handle dpp_data specially (merge instead of replace)
+            if (isset($input['dpp_data']) && is_array($input['dpp_data'])) {
+                // Merge dpp_data instead of replacing it
+                if (!isset($p['dpp_data'])) {
+                    $p['dpp_data'] = [];
+                }
+                foreach ($input['dpp_data'] as $key => $value) {
+                    $p['dpp_data'][$key] = $value;
+                }
+            }
+            
+            // Update other fields
             foreach ($input as $key => $value) {
-                if ($key !== 'id' && $key !== 'created_at') { // Don't allow changing ID or creation date
+                if ($key !== 'id' && $key !== 'created_at' && $key !== 'dpp_data') {
                     $p[$key] = $value;
                 }
             }
             
             // Update the updated_at timestamp
             $p['updated_at'] = date('c');
+            $updated_product = $p;
             
             break;
         }
@@ -217,18 +230,11 @@ function handleUpdateProduct($product_id) {
     // Save updated products
     if (file_put_contents($PRODUCTS_FILE, json_encode($products, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))) {
         http_response_code(200);
-        
-        // Find and return the updated product
-        foreach ($products as $p) {
-            if ($p['id'] === $product_id) {
-                echo json_encode([
-                    'status' => 'success',
-                    'message' => 'Product updated successfully',
-                    'data' => $p
-                ]);
-                return;
-            }
-        }
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Product updated successfully',
+            'data' => $updated_product
+        ]);
     } else {
         http_response_code(500);
         echo json_encode(['error' => 'Failed to update product']);
