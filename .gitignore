@@ -8,6 +8,13 @@
 .env.*.local
 symfony.lock
 
+# Personal/Local files (keep locally, not on GitHub)
+IT-SUPPORT-REQUEST.md
+START-GUIDE-ELISABETH.md
+HOW-TO-REQUEST-PREREQUISITES.md
+GITHUB-SETUP.md
+PROJECT-SUMMARY.txt
+
 # IDE
 .idea/
 .vscode/
