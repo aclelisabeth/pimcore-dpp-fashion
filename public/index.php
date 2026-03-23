@@ -51,6 +51,13 @@ if (preg_match('/^\/api\/dpp\/(\d+)\/export$/', $request_uri, $matches)) {
     if ($request_method === 'GET') {
         handleSingleExport($product_id);
     }
+} elseif (preg_match('/^\/api\/dpp\/(\d+)$/', $request_uri, $matches)) {
+    $product_id = (int)$matches[1];
+    
+    if ($request_method === 'PUT') {
+        // PUT /api/dpp/{id} - Update product
+        handleUpdateProduct($product_id);
+    }
 } elseif ($request_uri === '/api/dpp/products' && $request_method === 'POST') {
     // POST /api/dpp/products - Create new product
     handleCreateProduct();
@@ -165,6 +172,66 @@ function handleCreateProduct() {
     } else {
         http_response_code(500);
         echo json_encode(['error' => 'Failed to save product']);
+    }
+}
+
+function handleUpdateProduct($product_id) {
+    global $PRODUCTS_FILE;
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid or empty request body']);
+        return;
+    }
+    
+    $products = loadProducts();
+    $product_found = false;
+    
+    // Find and update product
+    foreach ($products as &$p) {
+        if ($p['id'] === $product_id) {
+            $product_found = true;
+            
+            // Update provided fields
+            foreach ($input as $key => $value) {
+                if ($key !== 'id' && $key !== 'created_at') { // Don't allow changing ID or creation date
+                    $p[$key] = $value;
+                }
+            }
+            
+            // Update the updated_at timestamp
+            $p['updated_at'] = date('c');
+            
+            break;
+        }
+    }
+    
+    if (!$product_found) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Product not found']);
+        return;
+    }
+    
+    // Save updated products
+    if (file_put_contents($PRODUCTS_FILE, json_encode($products, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))) {
+        http_response_code(200);
+        
+        // Find and return the updated product
+        foreach ($products as $p) {
+            if ($p['id'] === $product_id) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Product updated successfully',
+                    'data' => $p
+                ]);
+                return;
+            }
+        }
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update product']);
     }
 }
 

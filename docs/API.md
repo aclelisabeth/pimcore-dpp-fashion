@@ -5,6 +5,19 @@
 http://localhost:8080/api/dpp
 ```
 
+## Quick Endpoint Reference
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/` | API info |
+| GET | `/products` | List all products |
+| POST | `/products` | Create new product |
+| PUT | `/{id}` | Update product |
+| GET | `/{id}/export` | Export single product |
+| POST | `/batch/export` | Batch export |
+
+See `POST.md` and `PUT.md` for detailed documentation.
+
 ## Endpoints
 
 ### 1. Export Single Product
