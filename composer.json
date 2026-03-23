@@ -1,0 +1,40 @@
+{
+  "name": "pimcore/pimcore-dpp-fashion",
+  "description": "Pimcore 10 Digital Product Passport (DPP) implementation for Fashion/Textiles",
+  "type": "project",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "DPP Fashion Team",
+      "email": "info@example.com"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "pimcore/core": "~10.0",
+    "pimcore/admin-ui-classic-bundle": "~1.0",
+    "symfony/dotenv": "^6.0",
+    "symfony/console": "^6.0",
+    "symfony/routing": "^6.0",
+    "symfony/http-kernel": "^6.0",
+    "symfony/dependency-injection": "^6.0",
+    "symfony/event-dispatcher": "^6.0",
+    "symfony/serializer": "^6.0",
+    "symfony/validator": "^6.0",
+    "doctrine/orm": "^2.10",
+    "doctrine/dbal": "^3.0"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^1.0",
+    "squizlabs/php_codesniffer": "^3.6",
+    "phpunit/phpunit": "^9.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/",
+      "Pimcore\\Bundle\\DppFashionBundle\\": "src/Bundle/DppFashionBundle/"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

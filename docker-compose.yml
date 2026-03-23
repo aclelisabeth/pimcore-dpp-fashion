@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  app:
+    image: pimcore/pimcore:latest-php8.1-apache
+    container_name: pimcore-dpp-fashion
+    environment:
+      - PIMCORE_ADMIN_USERNAME=admin
+      - PIMCORE_ADMIN_PASSWORD=admin123
+      - DATABASE_URL=mysql://pimcore:pimcore@db:3306/pimcore?serverVersion=8.0
+      - REDIS_URL=redis://redis:6379/0
+      - PIMCORE_ENVIRONMENT=dev
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - pimcore-cache:/var/www/html/var/cache
+      - pimcore-log:/var/www/html/var/log
+    depends_on:
+      - db
+      - redis
+    networks:
+      - pimcore-network
+
+  db:
+    image: mysql:8.0
+    container_name: pimcore-dpp-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=pimcore
+      - MYSQL_USER=pimcore
+      - MYSQL_PASSWORD=pimcore
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - pimcore-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: pimcore-dpp-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - pimcore-network
+
+volumes:
+  pimcore-cache:
+  pimcore-log:
+  mysql-data:
+
+networks:
+  pimcore-network:
+    driver: bridge

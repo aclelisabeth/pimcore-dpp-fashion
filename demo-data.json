@@ -1,0 +1,270 @@
+{
+  "products": [
+    {
+      "productId": "SKU-ORGANIC-TEE-001",
+      "productName": "Organic Cotton T-Shirt",
+      "sku": "SKU-ORGANIC-TEE-001",
+      "category": "T-Shirts",
+      "description": "Premium organic cotton t-shirt made from certified sustainable cotton. Soft, breathable, and environmentally friendly.",
+      "manufacturerName": "EcoFashion Ltd",
+      "manufacturerCountry": "DE",
+      "materials": [
+        {
+          "materialName": "Organic Cotton",
+          "materialType": "Natural Fiber",
+          "percentage": 100,
+          "originCountry": "INDIA",
+          "certification": "GOTS (Global Organic Textile Standard)",
+          "sourceType": "Organic",
+          "co2_per_kg": 1.2,
+          "waterConsumption_liters_per_kg": 1800,
+          "chemicalTreatment": "None"
+        }
+      ],
+      "sustainability": {
+        "totalCo2FootprintKg": 2.5,
+        "totalWaterConsumptionL": 2500,
+        "chemicalLoadScore": 15
+      },
+      "durability": {
+        "estimatedLifespanMonths": 36,
+        "repairability": {
+          "score": 7,
+          "replacementPartsAvailable": false
+        }
+      },
+      "endOfLife": {
+        "recyclable": true,
+        "recyclabilityScore": 90,
+        "recyclingProgram": "EcoFashion Take-Back Program"
+      },
+      "compliance": {
+        "certifications": [
+          "GOTS - Global Organic Textile Standard",
+          "OEKO-TEX Standard 100",
+          "Fairtrade Certified"
+        ],
+        "standards": [
+          "ISO 14062:2002 - Environmental management in product design",
+          "EU 2014/30/EU - EMC Directive"
+        ]
+      },
+      "supplyChain": {
+        "origin": {
+          "country": "INDIA",
+          "facility": "GreenTex Mills, Tamil Nadu"
+        },
+        "steps": [
+          {
+            "stage": "Raw Material Cultivation",
+            "location": "INDIA",
+            "certifications": ["GOTS"]
+          },
+          {
+            "stage": "Spinning & Weaving",
+            "location": "INDIA",
+            "certifications": ["OEKO-TEX"]
+          },
+          {
+            "stage": "Dyeing & Finishing",
+            "location": "ITALY",
+            "certifications": ["OEKO-TEX", "ZDHC"]
+          },
+          {
+            "stage": "Manufacturing",
+            "location": "VIETNAM",
+            "certifications": ["Fair Trade", "SA8000"]
+          }
+        ]
+      }
+    },
+    {
+      "productId": "SKU-RECYCLED-JEANS-001",
+      "productName": "Recycled Denim Jeans",
+      "sku": "SKU-RECYCLED-JEANS-001",
+      "category": "Jeans",
+      "description": "Sustainable denim made from 85% recycled materials with eco-friendly dyeing processes. Durable and stylish.",
+      "manufacturerName": "SustainableDenim Co",
+      "manufacturerCountry": "IT",
+      "materials": [
+        {
+          "materialName": "Recycled Denim",
+          "materialType": "Synthetic Blend",
+          "percentage": 85,
+          "originCountry": "NETHERLANDS",
+          "certification": "Global Recycled Standard",
+          "sourceType": "Recycled",
+          "co2_per_kg": 0.8,
+          "waterConsumption_liters_per_kg": 50,
+          "chemicalTreatment": "Low-impact dyes"
+        },
+        {
+          "materialName": "Virgin Cotton",
+          "materialType": "Natural Fiber",
+          "percentage": 15,
+          "originCountry": "PAKISTAN",
+          "certification": "OEKO-TEX",
+          "sourceType": "Conventional",
+          "co2_per_kg": 1.5,
+          "waterConsumption_liters_per_kg": 2700,
+          "chemicalTreatment": "Standard processing"
+        }
+      ],
+      "sustainability": {
+        "totalCo2FootprintKg": 3.2,
+        "totalWaterConsumptionL": 1200,
+        "chemicalLoadScore": 25
+      },
+      "durability": {
+        "estimatedLifespanMonths": 48,
+        "repairability": {
+          "score": 8,
+          "replacementPartsAvailable": true
+        }
+      },
+      "endOfLife": {
+        "recyclable": true,
+        "recyclabilityScore": 85,
+        "recyclingProgram": "Denim Recycling Initiative"
+      },
+      "compliance": {
+        "certifications": [
+          "Global Recycled Standard",
+          "OEKO-TEX Standard 100",
+          "ZDHC Level 4"
+        ],
+        "standards": [
+          "ISO 14040 - LCA",
+          "ISO 14064 - Greenhouse gases"
+        ]
+      },
+      "supplyChain": {
+        "origin": {
+          "country": "NETHERLANDS",
+          "facility": "RecycleTex Facility, Amsterdam"
+        },
+        "steps": [
+          {
+            "stage": "Post-consumer textile collection",
+            "location": "EU",
+            "certifications": ["GRS"]
+          },
+          {
+            "stage": "Recycling & Processing",
+            "location": "NETHERLANDS",
+            "certifications": ["GRS"]
+          },
+          {
+            "stage": "Yarn Production",
+            "location": "ITALY",
+            "certifications": ["OEKO-TEX", "ZDHC"]
+          },
+          {
+            "stage": "Weaving & Dyeing",
+            "location": "ITALY",
+            "certifications": ["ZDHC Level 4"]
+          },
+          {
+            "stage": "Garment Manufacturing",
+            "location": "PORTUGAL",
+            "certifications": ["SA8000", "Fair Work"]
+          }
+        ]
+      }
+    },
+    {
+      "productId": "SKU-WOOL-JACKET-001",
+      "productName": "Sustainable Wool Jacket",
+      "sku": "SKU-WOOL-JACKET-001",
+      "category": "Jackets",
+      "description": "High-quality wool jacket from responsibly managed farms. Water-resistant and long-lasting.",
+      "manufacturerName": "Nordic Wool Fashion",
+      "manufacturerCountry": "SE",
+      "materials": [
+        {
+          "materialName": "Merino Wool",
+          "materialType": "Natural Fiber",
+          "percentage": 95,
+          "originCountry": "NEW ZEALAND",
+          "certification": "Responsible Wool Standard",
+          "sourceType": "Organic",
+          "co2_per_kg": 1.8,
+          "waterConsumption_liters_per_kg": 800,
+          "chemicalTreatment": "Low-impact acid dyes"
+        },
+        {
+          "materialName": "Nylon",
+          "materialType": "Synthetic",
+          "percentage": 5,
+          "originCountry": "FRANCE",
+          "certification": "OEKO-TEX",
+          "sourceType": "Virgin",
+          "co2_per_kg": 6.0,
+          "waterConsumption_liters_per_kg": 100,
+          "chemicalTreatment": "Standard"
+        }
+      ],
+      "sustainability": {
+        "totalCo2FootprintKg": 4.1,
+        "totalWaterConsumptionL": 1800,
+        "chemicalLoadScore": 20
+      },
+      "durability": {
+        "estimatedLifespanMonths": 60,
+        "repairability": {
+          "score": 9,
+          "replacementPartsAvailable": true
+        }
+      },
+      "endOfLife": {
+        "recyclable": true,
+        "recyclabilityScore": 88,
+        "recyclingProgram": "Nordic Wool Recycling"
+      },
+      "compliance": {
+        "certifications": [
+          "Responsible Wool Standard",
+          "OEKO-TEX Standard 100",
+          "Fair Trade Certified"
+        ],
+        "standards": [
+          "ISO 14040 - LCA",
+          "EU 2014/30/EU"
+        ]
+      },
+      "supplyChain": {
+        "origin": {
+          "country": "NEW ZEALAND",
+          "facility": "Merino Sheep Farms"
+        },
+        "steps": [
+          {
+            "stage": "Sheep Farming",
+            "location": "NEW ZEALAND",
+            "certifications": ["RWS", "Animal Welfare"]
+          },
+          {
+            "stage": "Wool Cleaning & Preparation",
+            "location": "AUSTRALIA",
+            "certifications": ["RWS"]
+          },
+          {
+            "stage": "Spinning",
+            "location": "UK",
+            "certifications": ["OEKO-TEX"]
+          },
+          {
+            "stage": "Knitting & Finishing",
+            "location": "IRELAND",
+            "certifications": ["OEKO-TEX"]
+          },
+          {
+            "stage": "Garment Manufacturing",
+            "location": "SWEDEN",
+            "certifications": ["Fair Trade", "SA8000"]
+          }
+        ]
+      }
+    }
+  ]
+}

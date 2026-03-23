@@ -1,0 +1,35 @@
+# Pimcore
+/var/
+/public/var/
+/public/bundles/
+/public/uploads/
+.env.local
+.env.*.local
+symfony.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+.docker/
+
+# Dependencies
+/vendor/
+/node_modules/
+/package-lock.json
+/composer.lock
+
+# Testing
+/coverage/
+.phpunit.result.cache
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
