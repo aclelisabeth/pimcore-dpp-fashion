@@ -6,28 +6,24 @@
   "authors": [
     {
       "name": "DPP Fashion Team",
-      "email": "info@example.com"
+      "email": "infoeli@example.com"
     }
   ],
   "require": {
     "php": "^8.1",
-    "pimcore/core": "~10.0",
-    "pimcore/admin-ui-classic-bundle": "~1.0",
-    "symfony/dotenv": "^6.0",
-    "symfony/console": "^6.0",
-    "symfony/routing": "^6.0",
-    "symfony/http-kernel": "^6.0",
-    "symfony/dependency-injection": "^6.0",
-    "symfony/event-dispatcher": "^6.0",
-    "symfony/serializer": "^6.0",
-    "symfony/validator": "^6.0",
-    "doctrine/orm": "^2.10",
-    "doctrine/dbal": "^3.0"
+    "pimcore/pimcore": "^10.6",
+    "symfony/dotenv": "^5.4",
+    "symfony/console": "^5.4"
   },
   "require-dev": {
     "phpstan/phpstan": "^1.0",
     "squizlabs/php_codesniffer": "^3.6",
     "phpunit/phpunit": "^9.5"
+  },
+  "config": {
+    "audit": {
+      "block-insecure": false
+    }
   },
   "autoload": {
     "psr-4": {
