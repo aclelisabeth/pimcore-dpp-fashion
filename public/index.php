@@ -24,7 +24,18 @@ $DATA_DIR = __DIR__ . '/../data';
 
 // Ensure data directory exists
 if (!is_dir($DATA_DIR)) {
-    mkdir($DATA_DIR, 0755, true);
+    if (!mkdir($DATA_DIR, 0755, true)) {
+         error_log('Failed to create data directory: ' . $DATA_DIR);
+         http_response_code(500);
+         die(json_encode(['error' => 'Failed to initialize data directory']));
+    }
+}
+
+// Verify directory is writable
+if (!is_writable($DATA_DIR)) {
+     error_log('Data directory is not writable: ' . $DATA_DIR);
+     http_response_code(500);
+     die(json_encode(['error' => 'Data directory is not writable']));
 }
 
 // Initialize products file if it doesn't exist
@@ -113,19 +124,27 @@ function handleProductsList() {
 }
 
 function handleCreateProduct() {
-    global $PRODUCTS_FILE;
-    
-    $input = json_decode(file_get_contents('php://input'), true);
-    
-    // Validate required fields
-    $required = ['name', 'category', 'sku', 'dpp_data'];
-    foreach ($required as $field) {
-        if (!isset($input[$field])) {
-            http_response_code(400);
-            echo json_encode(['error' => "Missing required field: $field"]);
-            return;
-        }
-    }
+     global $PRODUCTS_FILE;
+     
+     $json_string = file_get_contents('php://input');
+     $input = json_decode($json_string, true);
+     
+     // Validate JSON decode succeeded
+     if ($input === null && !empty($json_string)) {
+         http_response_code(400);
+         echo json_encode(['error' => 'Invalid JSON: ' . json_last_error_msg()]);
+         return;
+     }
+     
+     // Validate required fields
+     $required = ['name', 'category', 'sku', 'dpp_data'];
+     foreach ($required as $field) {
+         if (!isset($input[$field])) {
+             http_response_code(400);
+             echo json_encode(['error' => "Missing required field: $field"]);
+             return;
+         }
+     }
     
     $products = loadProducts();
     
@@ -176,15 +195,23 @@ function handleCreateProduct() {
 }
 
 function handleUpdateProduct($product_id) {
-    global $PRODUCTS_FILE;
-    
-    $input = json_decode(file_get_contents('php://input'), true);
-    
-    if (!$input) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid or empty request body']);
-        return;
-    }
+     global $PRODUCTS_FILE;
+     
+     $json_string = file_get_contents('php://input');
+     $input = json_decode($json_string, true);
+     
+     // Validate JSON decode succeeded
+     if ($input === null && !empty($json_string)) {
+         http_response_code(400);
+         echo json_encode(['error' => 'Invalid JSON: ' . json_last_error_msg()]);
+         return;
+     }
+     
+     if (!$input) {
+         http_response_code(400);
+         echo json_encode(['error' => 'Invalid or empty request body']);
+         return;
+     }
     
     $products = loadProducts();
     $product_found = false;
@@ -267,57 +294,103 @@ function handleSingleExport($product_id) {
 }
 
 function handleBatchExport() {
-    $input = json_decode(file_get_contents('php://input'), true);
-    
-    if (!$input || !isset($input['productIds']) || !is_array($input['productIds'])) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid request body. Expected: {"productIds": [1, 2, 3]}']);
-        return;
-    }
-    
-    $products = loadProducts();
-    $exported = [];
-    
-    foreach ($input['productIds'] as $id) {
-        foreach ($products as $p) {
-            if ($p['id'] === $id) {
-                $exported[] = $p;
-                break;
-            }
-        }
-    }
-    
-    echo json_encode([
-        'status' => 'success',
-        'count' => count($exported),
-        'data' => $exported,
-        'exported_at' => date('c'),
-        'version' => '1.0.0'
-    ]);
+     $json_string = file_get_contents('php://input');
+     $input = json_decode($json_string, true);
+     
+     // Validate JSON decode succeeded
+     if ($input === null && !empty($json_string)) {
+         http_response_code(400);
+         echo json_encode(['error' => 'Invalid JSON: ' . json_last_error_msg()]);
+         return;
+     }
+     
+     if (!$input || !isset($input['productIds']) || !is_array($input['productIds'])) {
+         http_response_code(400);
+         echo json_encode(['error' => 'Invalid request body. Expected: {"productIds": [1, 2, 3]}']);
+         return;
+     }
+     
+     // Validate product IDs are integers
+     foreach ($input['productIds'] as $id) {
+         if (!is_int($id) || $id <= 0) {
+             http_response_code(400);
+             echo json_encode(['error' => 'Product IDs must be positive integers']);
+             return;
+         }
+     }
+     
+     $products = loadProducts();
+     
+     // Create indexed lookup for O(n) performance instead of O(n²)
+     $product_index = [];
+     foreach ($products as $p) {
+         $product_index[$p['id']] = $p;
+     }
+     
+     $exported = [];
+     foreach ($input['productIds'] as $id) {
+         if (isset($product_index[$id])) {
+             $exported[] = $product_index[$id];
+         }
+     }
+     
+     echo json_encode([
+         'status' => 'success',
+         'count' => count($exported),
+         'data' => $exported,
+         'exported_at' => date('c'),
+         'version' => '1.0.0'
+     ]);
 }
 
 function loadProducts() {
-    global $PRODUCTS_FILE;
-    
-    if (!file_exists($PRODUCTS_FILE)) {
-        return getDefaultProducts();
-    }
-    
-    $content = file_get_contents($PRODUCTS_FILE);
-    $products = json_decode($content, true);
-    
-    if (!is_array($products)) {
-        return getDefaultProducts();
-    }
-    
-    return $products;
+     global $PRODUCTS_FILE;
+     
+     if (!file_exists($PRODUCTS_FILE)) {
+         return getDefaultProducts();
+     }
+     
+     $content = file_get_contents($PRODUCTS_FILE);
+     
+     if ($content === false) {
+         error_log('Failed to read products file: ' . $PRODUCTS_FILE);
+         return getDefaultProducts();
+     }
+     
+     $products = json_decode($content, true);
+     
+     // Validate JSON decode succeeded
+     if ($products === null && !empty($content)) {
+         error_log('Invalid JSON in products file: ' . json_last_error_msg());
+         return getDefaultProducts();
+     }
+     
+     if (!is_array($products)) {
+         return getDefaultProducts();
+     }
+     
+     return $products;
 }
 
 function initializeProductsFile() {
-    global $PRODUCTS_FILE;
-    
-    $default_products = getDefaultProducts();
-    file_put_contents($PRODUCTS_FILE, json_encode($default_products, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+     global $PRODUCTS_FILE;
+     
+     $default_products = getDefaultProducts();
+     $json_content = json_encode($default_products, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+     
+     if ($json_content === false) {
+         error_log('Failed to encode default products to JSON: ' . json_last_error_msg());
+         http_response_code(500);
+         die(json_encode(['error' => 'Failed to initialize products file']));
+     }
+     
+     $bytes_written = file_put_contents($PRODUCTS_FILE, $json_content);
+     
+     if ($bytes_written === false) {
+         error_log('Failed to write products file: ' . $PRODUCTS_FILE);
+         http_response_code(500);
+         die(json_encode(['error' => 'Failed to write products file']));
+     }
 }
 
 function getDefaultProducts() {
